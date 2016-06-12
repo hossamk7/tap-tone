@@ -19,7 +19,7 @@
 		
 		var circles = [];
 		var squares = [];
-		var getKeyData(); //function is in data.js
+		var keyData = getKeyData();
 		
 		function onKeyDown(event) {
 			if(keyData[event.key]){ //only fire if there is an object stored in keydata for the key pressed
@@ -27,25 +27,31 @@
 				
 				//random position on each refresh but each keypress stays same until refresh.
 				//if position is undefined make a random position, otherwise keep posistion
+				var maxPoint = new Point(view.size.width, view.size.height); 
+				var randPoint = Point.random(); 
 				if(!keyData[event.key].position) {
-					var maxPoint = new Point(view.size.width, view.size.height); 
-					var randPoint = Point.random(); 
-					var visiblePoint = randPoint * maxPoint;
-					keyData[event.key].position = visiblePoint;
+					keyData[event.key].position = randPoint;
 				}
+
+				console.log("circles length: " + circles.length);
 				//draw circle
-				var circle = new Path.Circle(new Point(keyData[event.key].position), 300); 
-				circle.fillColor = keyData[event.key].circleColour;
-				circles.push(circle); 
+				//multiply the position by the maxPoint to get ensure the shape draws inside the view.
+				if(circles.length < 100) {
+					var circle = new Path.Circle(new Point(keyData[event.key].position * maxPoint), 300); 
+					circle.fillColor = keyData[event.key].circleColour;
+					circles.push(circle); 
+				}
 				
 				//draw square
-				var square = new Path.Rectangle({
-					point: keyData[event.key].position - 100,
-					size: [200, 200],
-					fillColor: keyData[event.key].squareColour 
-				});
-				squares.push(square);
-				console.log(squares.length)				
+				if(squares.length < 100) {
+					var square = new Path.Rectangle({
+						point: (keyData[event.key].position * maxPoint) - 100,
+						size: [200, 200],
+						fillColor: keyData[event.key].squareColour 
+					});
+					squares.push(square);
+				}
+				console.log("squares" + squares.length);				
 			}				
 		}
 
